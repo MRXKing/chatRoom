@@ -20,6 +20,8 @@ npm install pm2-windows-startup -g
 pm2-startup install
 pm2 start bin/www --name chatRoom --watch
 pm2 save
-reboot
+
+#reboot
 pm2 ls
+
 ```
