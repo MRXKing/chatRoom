@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <title>chatRoom</title>
+  </head>
+  <link rel="stylesheet" href="/css/style.css" >
+  <link rel="stylesheet" href="/css/login.css" >
+  <body>
+    <video  muted loop='loop' autoplay="autoplay">
+      <source src="wall.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+    <div class="login">
+      <div class="header">
+         login
+      </div>
+      <div class="content">
+        <input type="text"  value="" id="user_id">
+        <input type="password"  value="" id="user_pwd">
+        <div>
+          <button type="button" name="button" id="login">登录</button>
+          <button type="button" name="button" id="register">register</button>
+        </div>
+        <div>
+          <span style="color:#fff;display:block"></span>
+        </div>
+      </div>
+    </div>
+  </body>
+  <script src="http://code.jquery.com/jquery-2.1.1.min.js"></script>
+  <script type="text/javascript">
+      $(()=>{
+        if (sessionStorage.user_id) {
+           $.ajax({
+             method:'get',
+             url:'/checkSession',
+             data:{
+               user_id:sessionStorage.user_id
+             },
+             success:res => {
+                location.replace('/homepage')
+             },
+             error:err => {
+               console.log(err);
+             }
+           })
+        }//session检验
+      })
+      function login(event){
+         if (event.keyCode && event.keyCode!= 13) {
+            return;
+         }
+            if ($('#user_id').val() && $('#user_pwd').val()) {
+              $.ajax({
+                method:'post',
+                url:'/login',
+                data:{
+                  user_id:$('#user_id').val(),
+                  pwd:$('#user_pwd').val()
+                },
+                success:res => {
+                  $('span').text(res.data)
+                  sessionStorage.user_id = res.user_id;
+                  setTimeout(()=>{
+                    location.replace('/homepage')
+                  },1000)
+                },
+                error:err => $('span').text(err.responseJSON.data)
+              })
+            }else {
+              $('span').text('账号或密码不能为空')
+            }
+      }
+      $('#login').on('click',login)
+      $('#user_id').on('keyup',login)
+      $('#user_pwd').on('keyup',login)
+      $('#register').on('click',()=>{
+        location.assign('/register/index')
+      })
+  </script>
+</html>

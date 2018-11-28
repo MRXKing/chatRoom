@@ -1,0 +1,92 @@
+@keyframes move {
+  0% {
+    transform: translateY(-100px);
+    opacity: 0;
+  }
+
+  100% {
+    transform: translateY(0px);
+    opacity: 1;
+  }
+}
+html,body {
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.login {
+  width: 300px;
+  height: 400px;
+  background: rgba(0, 0, 0, 0.6);
+  position: absolute;
+  border-radius: 10px;
+  z-index: 2;
+  transform: translateY(-100px);
+  opacity: 0;
+  animation: move 0.5s linear forwards;
+  padding: 10px;
+}
+
+.header {
+  width: 100%;
+  height: 50px;
+  color: #fff;
+  text-align: center;
+  line-height: 50px;
+  font-family: serif;
+  font-size: 30px;
+  text-shadow: 1px 1px #ccc;
+}
+
+.content {
+  width: 100%;
+  height: 340px;
+}
+
+.content input {
+  margin: 60px auto;
+  display: block;
+  width: 80%;
+  height: 30px;
+  outline: inherit;
+}
+.content input
+{
+  background:transparent;
+  border: none;
+  color:#ccc;
+  font-size: 20px;
+  border-bottom: 1px solid #ccc;
+}
+.content input[type=text]
+{
+  background: url(../images/user.png) no-repeat left center;
+  background-size: 20px;
+  padding-left: 30px;
+}
+.content input[type=password]
+{
+  background: url(../images/pwd.png) no-repeat left center;
+  background-size: 20px;
+  padding-left: 30px;
+}
+.content div {
+  display: flex;
+  justify-content: space-between;
+  width: 80%;
+  height: 30px;
+  margin:30px auto;
+}
+
+.content div button {
+  width: 40%;
+  border-radius: 6px;
+  background-color: #4CAF50;
+  border: none;
+  color: white;
+  text-align: center;
+  display: inline-block;
+  border: none;
+  outline: none;
+}

@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>
+    chatRoom
+  </title>
+  <link rel='stylesheet' href='/css/style.css' />
+  <link rel='stylesheet' href='/css/index.css' />
+</head>
+<body>
+  <div class="wrapper">
+    <div class="index">
+      <div class="main">
+        <div class="main_inner">
+          <div class="main_left">
+               <ul id="num">'
+
+               </ul>
+          </div>
+          <div class="main_right">
+            <div class="top">
+              chatRoom 在线人数:<span id="user_num"></span>
+            </div>
+            <div class="content">
+              <div class="noinfo">
+                暂无消息
+              </div>
+              <div id="info">
+              </div>
+            </div>
+            <div class="insert">
+              <textarea name="name" rows="8" cols="80" id="input"></textarea>
+              <button type="button" name="button" id="send">发送</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="bg"></div>
+</body>
+<script src="http://code.jquery.com/jquery-2.1.1.min.js"></script>
+<script type="text/javascript">
+  $(()=>{
+    let ws = new WebSocket('ws://10.11.124.62:3000')
+    let user_id = sessionStorage.user_id;
+    ws.onopen = () => {
+      console.log(`[CLIENT] open()`)
+      if (user_id) {
+        $.ajax({
+          method:'get',
+          url:'../checkSession',
+          data:{
+            user_id:sessionStorage.user_id
+          },
+          success:res => {
+             if (res.errCode == 0) {
+               ws.send(JSON.stringify({
+                 "user_id": `${user_id}`,
+                 "check":"0"
+               }))
+             }
+          },
+          error:err => {
+             if (err.responseJSON.errCode == 1) {
+                location.replace('/')
+             }
+          }
+        })
+      }else {
+        location.replace('/')
+      }
+      function send(event){
+        if (event.keyCode && event.keyCode!= 13) {
+           return;
+        }
+          if ($('#input').val()) {
+            ws.send(JSON.stringify({
+              "user_id": `${user_id}`,
+              "msg": `${$('#input').val()}`,
+              "check":"2"
+            }))
+            $('#input').val('')
+          }
+
+      }
+      $('#send').on('click', send)
+      $('#input').on('keyup',send)
+    }
+
+    ws.onmessage = (chunk) => {
+      const msg = JSON.parse(chunk.data);
+       if (msg.check == 0) { //侧边栏添加
+         $("#num").append(`<li>${msg.user_id}</li>`)
+         $("#user_num").text(msg.user_num)
+       }else if (msg.check == 1) { //侧边栏删除
+          $("#num li:contains("+msg.user_id+")").remove()
+          $("#user_num").text(msg.user_num)
+       }else if(msg.check == 2){  //获取聊天内容
+         let date = new Date();
+         let hour = date.getHours();
+         let min = date.getMinutes();
+         $('#info').css('display','block')
+         $('.noinfo').css('display','none')
+         if (sessionStorage.hour && hour - sessionStorage.hour >= 1 || sessionStorage.min && min - sessionStorage.min == 10) {
+           sessionStorage.hour = hour
+            sessionStorage.min = min
+           $("#info").append(`<div class="time">${hour}:${min < 10 ? min = '0'+min : min}</div>`);
+         }else if(!sessionStorage.hour || !sessionStorage.min){
+           sessionStorage.hour = hour
+            sessionStorage.min = min
+           $("#info").append(`<div class="time">${hour}:${min < 10 ? min = '0'+min : min}</div>`);
+         }
+
+         if (msg.who == 1) {
+           $("#info").append(`<div class='say'><div id='data'> <span>${msg.data}</span></div><img src= 'images/tou.jpg'> <p>${msg.user_id}</p></div>`)
+         }else {
+           $('#info').append(`<div class="ysay"> <img src="images/tou.jpg" alt=""><p>${msg.user_id}</p> <div id="data2"><span>${msg.data}</span></div></div>`)
+         }
+          $("#info").scrollTop($('#info').get(0).scrollHeight)
+       }
+    }
+    ws.onclose = () => {
+      console.log('server close')
+    }
+    ws.onerror = (err) => {
+      console.log(err);
+    }
+  })
+
+</script>
+
+</html>
