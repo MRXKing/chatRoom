@@ -21,7 +21,5 @@ pm2-startup install
 pm2 start bin/www --name chatRoom --watch
 pm2 save
 
-#reboot
-pm2 ls
-
+#browser rum at localhost:3000
 ```
